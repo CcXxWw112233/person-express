@@ -1,8 +1,8 @@
 var UserSQL = {
-    insert: 'INSERT INTO user(uid,userName,password) VALUES(?,?,?)', // 插入数据
-    drop: 'DROP TABLE user', // 删除表中所有的数据
-    queryAll: 'SELECT * FROM user', // 查找表中所有数据
-    getUserById: 'SELECT * FROM user WHERE uid =?', // 查找符合条件的数据
+    insert: 'INSERT INTO users(user_id,user_name,password) VALUES(?,?,?)', // 插入数据
+    drop: 'DROP TABLE users', // 删除表中所有的数据
+    queryAll: 'SELECT * FROM users', // 查找表中所有数据
+    getUserById: 'SELECT * FROM users WHERE uid =?', // 查找符合条件的数据
 };
 module.exports = UserSQL;
 
