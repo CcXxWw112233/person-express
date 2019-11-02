@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <input type="file" name="file"/>
+        <button id="upload">上传</button>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+
+        $('#upload').click(function () {
+            var files = $('#file_id')[0].files;
+            var file = files[0];
+            formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', ".jpg");
+            reqUrl = 'http://localhost:3000/multerUpload/upload'
+            $.ajax({
+                type: "Post",
+                url: reqUrl,
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    return myXhr;
+                },
+                success: function (file_path) {
+                    console.log("file_path:" + file_path)
+                    if (file_path) {
+                        alert("文件上传成功")
+                    }
+                },
+                error: function (err) {
+
+                }
+
+            })
+        
+            })
+
+
+
+
+        })
+</script>
+
+</html>
