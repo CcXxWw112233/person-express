@@ -16,7 +16,7 @@ var responseJSON = function (res, ret) {
     if (typeof ret === 'undefined') {
         res.json({
             code: '-200',
-            msg: '操作失败'
+            message: '操作失败'
         });
     } else {
         res.json(ret);
@@ -45,7 +45,7 @@ router.get('/regist', function (req, res, next) {
             if (isTrue) {
                 data = {
                     code: 1,
-                    msg: '用户已存在'
+                    message: '用户已存在'
                 };//登录成功返回用户信息
             } else {
                 const user_id = new Date().getTime()
@@ -53,12 +53,12 @@ router.get('/regist', function (req, res, next) {
                     if (result) {
                         data = {
                             code: 0,
-                            msg: '注册成功'
+                            message: '注册成功'
                         };
                     } else {
                         data = {
                             code: -1,
-                            msg: '注册失败',
+                            message: '注册失败',
                             err: err
                         };
                     }
@@ -106,7 +106,7 @@ router.get('/login', function (req, res, next) {
             } else {
                 data = {
                     code: '-1',
-                    massage: '登录失败'
+                    message: '登录失败'
                 }
             }
             if (err) data.err = err;

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <input type="text" id='user_name' />
+        <input type="text" id='password' />
+        <button id="regist">注册</button>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+
+        $('#regist').click(function () {
+            var user_name = $('#user_name').val()
+            var password = $('#password').val()
+            reqUrl = 'http://localhost:3000/users/regist'
+            $.ajax({
+                type: "get",
+                url: reqUrl,
+                data: {
+                    user_name: user_name,
+                    password: password
+                },
+                dataType: "json",
+                success: function (res) {
+                    console.log("res:" + res)
+                    if (res.code == '0') {
+                    } else {
+                    }
+                    alert(res.message)
+                },
+                error: function (err) {
+                    alert(JSON.stringify(error))
+                }
+
+            })
+
+        })
+
+
+
+
+    })
+</script>
+
+</html>
