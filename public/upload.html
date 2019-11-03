@@ -7,6 +7,7 @@
 
 <body>
     <div>
+        <input id='user_name' placeholder="用户名"/>
         <input type="file" name="file" id='file_id'/>
         <button id="upload">上传</button>
     </div>
@@ -20,6 +21,8 @@
             formData = new FormData();
             formData.append('file', file);
             formData.append('type', ".jpg");
+            formData.append('id', $('#user_name').val());
+
             reqUrl = 'http://localhost:3000/multerUpload/upload'
             $.ajax({
                 type: "Post",
