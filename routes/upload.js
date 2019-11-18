@@ -26,9 +26,9 @@ var responseJSON = function (res, ret) {
 const insertAvatar = (url, req, _res, calback) => {
 	var param = req.body
 	var user_name = param.user_name;
-	var id = param.id;
+	var user_name = param.user_name;
 	pool.getConnection(function (err, connection) {
-		connection.query(userSQL.update, [{ avatar: url }, id], function (err, res) {
+		connection.query(userSQL.update, [{ avatar: url }, user_name], function (err, res) {
 			var data = {};
 			if (res) {
 				data = {

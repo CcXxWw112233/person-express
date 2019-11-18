@@ -48,7 +48,7 @@ router.get('/regist', function (req, res, next) {
                     message: '用户已存在'
                 };//登录成功返回用户信息
             } else {
-                const user_id = new Date().getTime()
+                const user_id = new Date().getTime().toString()
                 connection.query(userSQL.insert, [user_id, user_name, password], function (err, result) {
                     if (result) {
                         data = {

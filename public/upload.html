@@ -21,7 +21,7 @@
             formData = new FormData();
             formData.append('file', file);
             formData.append('type', ".jpg");
-            formData.append('id', $('#user_name').val());
+            formData.append('user_name', $('#user_name').val());
 
             reqUrl = 'http://localhost:3000/multerUpload/upload'
             $.ajax({
