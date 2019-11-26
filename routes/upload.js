@@ -8,10 +8,10 @@ const multer = require("multer");
 var router = express.Router();
 var mysql = require('mysql');
 var userSQL = require('../db/Usersql');
-var dbConfig = require('../db/DBConfig');
+var DBconfig = require('../db/DBconfig');
 
 const path = require('path')
-var pool = mysql.createPool(dbConfig.mysql);
+var pool = mysql.createPool(DBconfig.mysql);
 
 var responseJSON = function (res, ret) {
 	if (typeof ret === 'undefined') {

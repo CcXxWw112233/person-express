@@ -4,13 +4,13 @@ var router = express.Router();
 var URL = require('url');
 // 导入MySql模块
 var mysql = require('mysql');
-var dbConfig = require('../db/DBConfig');
+var DBconfig = require('../db/DBconfig');
 var userSQL = require('../db/Usersql');
 
 
 
 // 使用DBConfig.js的配置信息创建一个MySql链接池
-var pool = mysql.createPool(dbConfig.mysql);
+var pool = mysql.createPool(DBconfig.mysql);
 // 响应一个JSON数据
 var responseJSON = function (res, ret) {
     if (typeof ret === 'undefined') {
