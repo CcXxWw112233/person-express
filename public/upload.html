@@ -23,7 +23,7 @@
             formData.append('type', ".jpg");
             formData.append('user_name', $('#user_name').val());
 
-            reqUrl = 'http://localhost:3000/multerUpload/upload'
+            reqUrl = '/multerUpload/upload'
             $.ajax({
                 type: "Post",
                 url: reqUrl,
@@ -48,9 +48,6 @@
             })
         
             })
-
-
-
 
         })
 </script>
