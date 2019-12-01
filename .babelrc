@@ -1,7 +1,20 @@
+// {
+//   "presets": [
+//     "babel/env",
+//     "babel/preset-react"
+//   ],
+//   "plugins": []
+// }
 {
   "presets": [
-    "babel/env",
-    "babel/preset-react"
+    [
+      "env",
+      {
+        "modules": false
+      }
+    ],
+    "es2015",
+    "stage-2"
   ],
   "plugins": []
 }
