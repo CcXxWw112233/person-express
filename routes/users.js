@@ -1,18 +1,14 @@
-var express = require('express');
-var app = express();
-var router = express.Router();
-var URL = require('url');
-// 导入MySql模块
-var mysql = require('mysql');
-var DBconfig = require('../db/DBconfig');
-var userSQL = require('../db/Usersql');
-
-
+import express from 'express'
+import mysql from 'mysql'
+import DBconfig from '../db/DBconfig'
+import userSQL from '../db/Usersql'
+import jwt from 'jsonwebtoken'
+const router = express.Router();
 
 // 使用DBConfig.js的配置信息创建一个MySql链接池
-var pool = mysql.createPool(DBconfig.mysql);
+const pool = mysql.createPool(DBconfig.mysql);
 // 响应一个JSON数据
-var responseJSON = function (res, ret) {
+const responseJSON = function (res, ret) {
     if (typeof ret === 'undefined') {
         res.json({
             code: '-200',
@@ -27,21 +23,21 @@ router.get('/regist', function (req, res, next) {
     // 从连接池获取连接
     pool.getConnection(function (err, connection) {
         // 获取前台页面传过来的参数
-        var param = req.query || req.params;
-        var user_name = param.user_name;
-        var password = param.password;
-        var _res = res;
+        let param = req.query || req.params;
+        let user_name = param.user_name;
+        let password = param.password;
+        let _res = res;
         connection.query(userSQL.queryAll, function (err, res) {
-            var isTrue = false;
+            let isTrue = false;
             if (res) { //获取用户列表，循环遍历判断当前用户是否存在
-                for (var i = 0; i < res.length; i++) {
+                for (let i = 0; i < res.length; i++) {
                     if (res[i].user_name == user_name) {
                         isTrue = true;
                         break
                     }
                 }
             }
-            var data = {};
+            let data = {};
             if (isTrue) {
                 data = {
                     code: 1,
@@ -81,15 +77,15 @@ router.get('/login', function (req, res, next) {
     // 从连接池获取连接
     pool.getConnection(function (err, connection) {
         // 获取前台页面传过来的参数
-        var param = req.query || req.params;
-        var user_name = param.user_name;
-        var password = param.password
-        var _res = res;
+        let param = req.query || req.params;
+        let user_name = param.user_name;
+        let password = param.password
+        let _res = res;
         connection.query(userSQL.queryAll, function (err, res, result) {
-            var isTrue = false;
+            let isTrue = false;
             let userInfo = {}
             if (res) { //获取用户列表，循环遍历判断当前用户是否存在
-                for (var i = 0; i < res.length; i++) {
+                for (let i = 0; i < res.length; i++) {
                     if (res[i].user_name == user_name && res[i].password == password) {
                         userInfo = res[i]
                         isTrue = true;
@@ -97,11 +93,15 @@ router.get('/login', function (req, res, next) {
                     }
                 }
             }
-            var data = {};
+            let data = {};
             if (isTrue) {
                 data = {
                     userInfo,
-                    code: '0'
+                    code: '0',
+                    token: jwt.sign({ user_id: userInfo.user_id, }, 'abcd', {
+                        // 过期时间
+                        expiresIn: "60s"
+                    }),
                 }
             } else {
                 data = {
@@ -118,6 +118,30 @@ router.get('/login', function (req, res, next) {
 
         });
     });
+});
+
+// 查询用户信息
+router.get('/validate', function (req, res, next) {
+    // 从连接池获取连接
+    // 验证token合法性 对token进行解码
+    const token = req.headers.authorization;
+    jwt.verify(token, 'abcd', function (err, decode) {
+        if (err) {
+            res.json({
+                message: '当前用户未登录'
+            })
+        } else {
+            // 证明用户已经登录
+            res.json({
+                token: jwt.sign({ user_id: decode.user_id }, 'abcd', {
+                    // 过期时间
+                    expiresIn: "60s"
+                }),
+                decode,
+                message: '已登录'
+            })
+        }
+    })
 });
 
 /* GET users listing. */

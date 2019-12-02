@@ -11,6 +11,10 @@
         <input type="text" id='password' />
         <button id="login">登录</button>
     </div>
+    <div>
+        <button id="clear">清除登录信息</button>
+        <button id="validate">验证是否登录</button>
+    </div>
 </body>
 <script type="text/javascript">
     $(function () {
@@ -31,9 +35,35 @@
                     console.log("res:" + res)
                     if (res.code == '0') {
                         alert('登陆成功')
+                        localStorage.setItem('authorization', res.token)
                     } else {
                         alert(res.message)
                     }
+                },
+                error: function (err) {
+                    alert(JSON.stringify(error))
+                }
+
+            })
+
+        })
+
+        $('#clear').click(function () {
+            localStorage.setItem('authorization', '')
+        })
+
+        $('#validate').click(function () {
+            var valilogin = $('#valilogin').val()
+            reqUrl = '/users/validate'
+            $.ajax({
+                type: "get",
+                url: reqUrl,
+                headers: {
+                    authorization: localStorage.getItem('authorization')
+                },
+                dataType: "json",
+                success: function (res) {
+                    alert(res.message)
                 },
                 error: function (err) {
                     alert(JSON.stringify(error))
