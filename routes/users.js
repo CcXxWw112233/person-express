@@ -3,6 +3,8 @@ import mysql from 'mysql'
 import DBconfig from '../db/DBconfig'
 import userSQL from '../db/Usersql'
 import jwt from 'jsonwebtoken'
+import redis from 'redis'
+import redisClient from '../utils/redis_optons'
 const router = express.Router();
 
 // 使用DBConfig.js的配置信息创建一个MySql链接池
@@ -95,14 +97,17 @@ router.get('/login', function (req, res, next) {
             }
             let data = {};
             if (isTrue) {
+                const token = jwt.sign({ user_id: userInfo.user_id, }, 'abcd', {
+                    // 过期时间
+                    expiresIn: "60s"
+                })
+                redisClient.set('token', token, redis.print)
                 data = {
                     userInfo,
                     code: '0',
-                    token: jwt.sign({ user_id: userInfo.user_id, }, 'abcd', {
-                        // 过期时间
-                        expiresIn: "60s"
-                    }),
+                    token,
                 }
+
             } else {
                 data = {
                     code: '-1',
