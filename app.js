@@ -1,24 +1,9 @@
-// var createError = require('http-errors');
-// var express = require('express');
-// var path = require('path');
-// var cookieParser = require('cookie-parser');
-// var logger = require('morgan');
-
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
-// var uploadRouter = require('./routes/upload');
-
-// var app = express();
-
 import createError from 'http-errors'
 import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
-
-import indexRouter from './routes/index'
-import usersRouter from './routes/users'
-import uploadRouter from './routes/upload'
+import routers from './routers'
 const app = express();
 
 // view engine setup
@@ -30,17 +15,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));//使之可访问public的静态资源属性
-// 路由配置
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/multerUpload', uploadRouter);
+// 路由配置---start
+for (let val of routers) {
+  app.use(val.path, val.module);
+}
+// 路由配置---end
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
