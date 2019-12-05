@@ -1,25 +1,13 @@
 import express from 'express'
-import mysql from 'mysql'
-import DBconfig from '../db/DBconfig'
 import userSQL from '../db/Usersql'
 import jwt from 'jsonwebtoken'
 import redis from 'redis'
 import redisClient from '../utils/redis_optons'
+import concreatePool from '../utils/connect_db'
+import { responseJSON } from '../utils/utils'
+
 const router = express.Router();
 
-// 使用DBConfig.js的配置信息创建一个MySql链接池
-const pool = mysql.createPool(DBconfig.mysql);
-// 响应一个JSON数据
-const responseJSON = function (res, ret) {
-    if (typeof ret === 'undefined') {
-        res.json({
-            code: '-200',
-            message: '操作失败'
-        });
-    } else {
-        res.json(ret);
-    }
-};
 // 用户注册
 router.get('/regist', function (req, res, next) {
     // 从连接池获取连接
@@ -75,7 +63,45 @@ router.get('/regist', function (req, res, next) {
     });
 });
 // 用户登录
-router.get('/login', function (req, res, next) {
+router.get('/login', function (request, response, next) {
+    concreatePool({ sqlCode: userSQL.queryAll }).then(result => {
+        const param = request.query || request.params;
+        const user_name = param.user_name;
+        const password = param.password
+        let isTrue = false;
+        let userInfo = {}
+        if (result) { //获取用户列表，循环遍历判断当前用户是否存在
+            for (let i = 0; i < result.length; i++) {
+                if (result[i].user_name == user_name && result[i].password == password) {
+                    userInfo = result[i]
+                    isTrue = true;
+                    break
+                }
+            }
+        }
+        let data = {};
+        if (isTrue) {
+            const token = jwt.sign({ user_id: userInfo.user_id, }, 'abcd', {
+                // 过期时间
+                expiresIn: "60s"
+            })
+            redisClient.set('token', token, redis.print)
+            data = {
+                userInfo,
+                token,
+            }
+
+        } else {
+            data = {
+                message: '登录失败'
+            }
+        }
+        // if (err) data.err = err;
+        responseJSON(response, data);
+    }).catch(err => {
+        console.log('err', err)
+    })
+    return
     // 从连接池获取连接
     pool.getConnection(function (err, connection) {
         // 获取前台页面传过来的参数
