@@ -5,7 +5,6 @@ import redis from 'redis'
 import redisClient from '../utils/redis_optons'
 import concreatePool from '../utils/connect_db'
 import { responseJSON } from '../utils/utils'
-
 const router = express.Router();
 
 // 用户注册
@@ -85,7 +84,7 @@ router.get('/login', function (request, response, next) {
                 // 过期时间
                 expiresIn: "60s"
             })
-            redisClient.set('token', token, redis.print)
+            redisClient.set(token, userInfo.user_id, 'EX', 10)
             data = {
                 userInfo,
                 token,
@@ -101,57 +100,9 @@ router.get('/login', function (request, response, next) {
     }).catch(err => {
         console.log('err', err)
     })
-    return
-    // 从连接池获取连接
-    pool.getConnection(function (err, connection) {
-        // 获取前台页面传过来的参数
-        let param = req.query || req.params;
-        let user_name = param.user_name;
-        let password = param.password
-        let _res = res;
-        connection.query(userSQL.queryAll, function (err, res, result) {
-            let isTrue = false;
-            let userInfo = {}
-            if (res) { //获取用户列表，循环遍历判断当前用户是否存在
-                for (let i = 0; i < res.length; i++) {
-                    if (res[i].user_name == user_name && res[i].password == password) {
-                        userInfo = res[i]
-                        isTrue = true;
-                        break
-                    }
-                }
-            }
-            let data = {};
-            if (isTrue) {
-                const token = jwt.sign({ user_id: userInfo.user_id, }, 'abcd', {
-                    // 过期时间
-                    expiresIn: "60s"
-                })
-                redisClient.set('token', token, redis.print)
-                data = {
-                    userInfo,
-                    code: '0',
-                    token,
-                }
-
-            } else {
-                data = {
-                    code: '-1',
-                    message: '登录失败'
-                }
-            }
-            if (err) data.err = err;
-            // 以json形式，把操作结果返回给前台页面
-            responseJSON(_res, data);
-
-            // 释放链接
-            connection.release();
-
-        });
-    });
 });
 
-// 查询用户信息
+// 验证用户是否登录
 router.get('/validate', function (req, res, next) {
     // 从连接池获取连接
     // 验证token合法性 对token进行解码
@@ -173,6 +124,32 @@ router.get('/validate', function (req, res, next) {
             })
         }
     })
+});
+
+// 查询用户信息
+router.get('/userinfo', function (request, response, next) {
+    const param = request.query || request.params;
+    const authorization = param.authorization;
+    const calback = function (user_id) {
+        concreatePool({ sqlCode: userSQL.getUserById, placeValues: [user_id] }).then(result => {
+            let userInfo = {}
+            if (result) { //获取用户列表，循环遍历判断当前用户是否存在
+                userInfo = result[0]
+            }
+            responseJSON(response, { userInfo });
+        }).catch(err => {
+            console.log('err', err)
+        })
+    }
+    redisClient.get(authorization, function (err, replys) {
+        if (err) {
+            console.log('get_err', err)
+        }
+        const user_id = replys
+        calback(user_id)
+    });
+    // console.log('user_id', user_id)
+
 });
 
 /* GET users listing. */
