@@ -1,0 +1,1 @@
+{"version":3,"sources":["page/Topics/index.js"],"names":["Topics"],"mappings":"kIAAA,2BASeA,UAPA,WACX,OACI","file":"static/js/6.7400e40d.chunk.js","sourcesContent":["import React from 'react'\r\n\r\nconst Topics = () => {\r\n    return (\r\n        <div>\r\n            topics\r\n        </div>\r\n    );\r\n}\r\nexport default Topics"],"sourceRoot":""}
