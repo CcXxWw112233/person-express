@@ -5,6 +5,9 @@ import redis from 'redis'
 import redisClient from '../utils/redis_optons'
 import concreatePool from '../utils/connect_db'
 import { responseJSON } from '../utils/utils'
+import mysql from 'mysql'
+import DBconfig from '../db/DBconfig'
+const pool = mysql.createPool(DBconfig.mysql);
 const router = express.Router();
 
 // 用户注册

@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));//使之可访问public的静态资源属性
 // 在你应用 JavaScript 文件中包含了一个 script 标签
 // 的 index.html 中处理任何一个 route
-app.get('*', function (request, response) {
+app.get('*.html', function (request, response) {
   response.sendFile(path.resolve(__dirname, 'public', 'index.html'))
 })
 // 路由配置---start
